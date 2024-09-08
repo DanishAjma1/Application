@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  generate: MyString
+  model: MyString
+  Bug: MyString
+  title: MyString
+  description: MyText
+  priority: 1
+  project: one
+
+two:
+  generate: MyString
+  model: MyString
+  Bug: MyString
+  title: MyString
+  description: MyText
+  priority: 1
+  project: two
