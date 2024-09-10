@@ -1,0 +1,25 @@
+<%= form_with model: [project,project.bugs.build] do |form| %>
+  <div>
+    <%= form.label :Title %><br>
+    <%= form.text_field :title %>
+  </div>
+
+  <div>
+    <%= form.label :Description %><br>
+    <%= form.text_area :description %>
+  </div>
+
+    <div>
+    <%= form.label :Piority %><br>
+    <%= form.select :priority, options_for_select([['Low', 1], ['Medium', 2], ['High', 5], ['Critical', 10]]), {}, class: "form-control" %>
+  </div>
+  <%if current_user.qa?%>
+  <div>
+    <%= form.label "Assign Developers" %>
+    <%= form.collection_select(:developer_ids, User.where(role: 'developer'), :id, :email, {}, { multiple: true, size: 5 }) %>
+  </div>
+  <%end%>
+<div>
+  <%= form.submit "Save Project" %>
+  </div>
+<% end %>

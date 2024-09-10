@@ -1,7 +1,7 @@
 class Bug < ApplicationRecord
   belongs_to :project
 
-  enum priority: { low: 0, medium: 1, high: 2, critical: 3 }
-
-  validates :title, :status, :priority, presence: true
+  validates :title, :description, :priority, presence: true
+  belongs_to :qa, class_name: "User", foreign_key: "qa_id"
+  has_and_belongs_to_many :developer, class_name: "User"
 end

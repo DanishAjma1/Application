@@ -11,9 +11,9 @@ class Ability
       can :manage, Project
     elsif user.qa?
       can :manage, Bug
-      can [ :show, :update ], Project
-    else
-      flash[:alert] = "you don't have these rights."
+      can [ :read, :show, :update ], Project
+    elsif user.developer?
+      can [ :read, :show, :update ], Bug
     end
   end
 end

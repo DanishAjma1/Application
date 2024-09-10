@@ -4,10 +4,15 @@ class ProjectsController < ApplicationController
   before_action :set_project, only: [ :show, :edit, :update, :destroy ]
   def index
     if current_user.manager?
-    @projects = current_user.managed_projects
+  @pagy, @projects = pagy(current_user.managed_projects)
+    elsif current_user.qa?
+  @pagy, @projects = pagy(current_user.assigned_projects)
+    elsif current_user.developer?
+  @pagy, @bugs = pagy(current_user.assigned_bugs)
     else
-    # Handle other roles if necessary, or show an empty list
-    @projects = current_user.assigned_projects
+  @pagy_projects, @projects = pagy(Project.none)
+  @pagy_bugs, @bugs = pagy(Bug.none)
+  flash[:alert] = "You don't have permissions to view it."
     end
   end
 

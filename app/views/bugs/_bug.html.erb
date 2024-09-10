@@ -1,0 +1,21 @@
+<p>
+  <h4>Title:</h4>
+<%= bug.title %>
+</p>
+
+<p>
+  <h4>Description:</h4>
+  <%= bug.description %>
+</p>
+
+<p>
+  <h4>Piority:</h4>
+  <%= bug.priority %>
+</p>
+
+<%= link_to "Update it", edit_project_bug_path(@project, bug) %>
+
+<h5><%= link_to "Destroy", [@project, bug], data: {
+                                              turbo_method: :delete,
+                                              turbo_confirm: "Are you sure?",
+                                            } %></h5>

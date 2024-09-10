@@ -4,8 +4,16 @@
     <p><%= @project.status%></p>
 </div>
 <%= link_to "Edit",edit_project_path%><br>
+<% if can? :delete,@project %>
 <%= link_to "Delete",project_path(@project), data: {
                                                turbo_method: :delete,
                                                turbo_confirm: "Are you sure?",
                                              } %>
-  <%= link_to "Back",projects_path%><br>
+                                             <% end %>
+  <% if can? :read,Bug %>
+<h2>Bugs<h2>
+<%= render @project.bugs %>
+<h2>Add a Bug:</h2>
+<%= render "bugs/form", project: @project %>
+<% end %>
+<%= link_to "Back", projects_path%>

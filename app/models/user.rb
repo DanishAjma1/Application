@@ -9,8 +9,9 @@ class User < ApplicationRecord
   # Optional: Use enums for roles
   enum role: { manager: 1, qa: 2, developer: 3 }
 
-  has_many :managed_projects, class_name: "Project", foreign_key: "manager_id"
-  has_and_belongs_to_many :assigned_projects, class_name: "Project", dependent: :destroy
-  has_many :created_bugs, class_name: "Bug", foreign_key: "qa_id"
+  has_many :managed_projects, class_name: "Project", foreign_key: "manager_id", dependent: :destroy
+  has_and_belongs_to_many :assigned_projects, class_name: "Project"
+
+  has_many :created_bugs, class_name: "Bug", foreign_key: "qa_id", dependent: :destroy
   has_and_belongs_to_many :assigned_bugs, class_name: "Bug"
 end

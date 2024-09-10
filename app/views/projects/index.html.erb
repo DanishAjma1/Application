@@ -1,8 +1,10 @@
-<% if user_signed_in? %>
+<h2><%= (current_user.role).upcase %> is Signed_in Now..</h2>
+
+<% if can? :read,Project %>
 <h1>Projects List</h1>
 <table>
     <tr>
-    <th>Project Name</th>
+    <th>Project Title</th>
     <th>Description</th>
     <th>Status</th>
     <th>Actions</th>
@@ -12,18 +14,51 @@
         <td><%= link_to project.name,project %> </td>
         <td><%= project.description %> </td>
         <td><%= project.status %></td>
+        <% if can? :delete,project %>
         <td><%= link_to "Delete",project_path(project), data: {
                                                turbo_method: :delete,
                                                turbo_confirm: "Are you sure?",
                                              } %></td>
+                                             <% end %>
         <td>
             <%= link_to "Edit", edit_project_path(project) %>
         </td>
     </tr>
       <% end %>
 </table>
-<%# <div class="pag-bar mt-5 pt-5 d-flex justify-content-center">
-  <%== pagy_bootstrap_nav(@pagy)
-</div> %>
+<div class="pag-bar mt-5 pt-5 d-flex justify-content-center">
+  <%== pagy_bootstrap_nav(@pagy)%>
+</div>
+<% if can? :create, Project %>
 <p><%= link_to "New Book", new_project_path %></p>
+<% end %>
+<% elsif can? :read,Bug %>
+<h1>Bugs List</h1>
+<p>Bugs assigned to current_user are listed below..</p>
+<table>
+    <tr>
+    <th>Bug Title</th>
+    <th>Description</th>
+    <th>Priority</th>
+    <th>Actions</th>
+    </tr>
+    <% @bugs.each do |bug| %>
+    <tr>
+        <td><%= bug.title %> </td>
+        <td><%= bug.description %> </td>
+        <td><%= bug.priority %></td>
+        <%# <td><%= link_to "Delete",project_bug_path(bug.project, bug), data: {
+                                               turbo_method: :delete,
+                                               turbo_confirm: "Are you sure?",
+                                             } </td> %>
+        <td>
+        <%= link_to 'Edit', edit_project_bug_path(bug.project, bug) %>
+        </td>
+    </tr>
+      <% end %>
+</table>
+
+<div class="pag-bar mt-5 pt-5 d-flex justify-content-center">
+  <%== pagy_bootstrap_nav(@pagy)%>
+</div>
 <% end %>
