@@ -5,17 +5,23 @@ class ProjectsController < ApplicationController
   def index
     if current_user.manager?
   @pagy, @projects = pagy(current_user.managed_projects)
+
     elsif current_user.qa?
   @pagy, @projects = pagy(current_user.assigned_projects)
+
     elsif current_user.developer?
   @pagy, @bugs = pagy(current_user.assigned_bugs)
-    else
-  @pagy_projects, @projects = pagy(Project.none)
-  @pagy_bugs, @bugs = pagy(Bug.none)
-  flash[:alert] = "You don't have permissions to view it."
     end
   end
 
+  def search
+    @projects = current_user.managed_projects.where("name LIKE ?", "%#{params[:query]}%")
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.replace("projects-table-body", "index", locals: { projects: @projects }) }
+      format.html { render "index", locals: { projects: @projects } }
+      @pagy, @projects = pagy(@projects)
+    end
+  end
   def show
   end
 

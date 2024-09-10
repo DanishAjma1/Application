@@ -7,14 +7,14 @@ Rails.application.routes.draw do
   collection do
     get "search"
   end
+end
 
-  # Nested routes for bugs within projects
-  resources :bugs, only: [ :index, :update, :edit ] do
-    collection do
-      get "search"
-    end
+resources :bugs do
+  collection do
+    get "search"
   end
 end
+
     # associating controller name
     root to: "projects#index" # associating controller action
   end
