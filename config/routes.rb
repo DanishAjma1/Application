@@ -3,18 +3,13 @@ Rails.application.routes.draw do
     #       sessions: "users/sessions"
     #     }
     devise_for :users, controllers: { registrations: "users/registrations" }
-    resources :projects do
-  collection do
-    get "search"
+resources :projects do
+    collection do
+      get "search", to: "projects#search", as: "search"
+    end
+    resources :bugs do
+    end
   end
-end
-
-resources :bugs do
-  collection do
-    get "search"
-  end
-end
-
     # associating controller name
     root to: "projects#index" # associating controller action
   end

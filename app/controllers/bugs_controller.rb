@@ -1,7 +1,7 @@
 class BugsController < ApplicationController
   before_action :require_qa, only: [ :new, :create, :destroy ]
     # before_action :set_bug, only: [ :show, :edit, :update, :destroy ]
-    before_action :set_project
+    before_action :set_project, only: [ :new, :create, :destroy, :edit, :update ]
   before_action :set_bug, only: %i[edit update destroy]
 
   def show

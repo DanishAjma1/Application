@@ -15,11 +15,29 @@ class ProjectsController < ApplicationController
   end
 
   def search
-    @projects = current_user.managed_projects.where("name LIKE ?", "%#{params[:query]}%")
-    respond_to do |format|
-      format.turbo_stream { render turbo_stream: turbo_stream.replace("projects-table-body", "index", locals: { projects: @projects }) }
-      format.html { render "index", locals: { projects: @projects } }
+    if current_user.manager?
+      @projects = current_user.managed_projects.where("name LIKE ?", "%#{params[:query]}%")
       @pagy, @projects = pagy(@projects)
+      render_search_results("projects-table-body", "projects")
+
+    elsif current_user.qa?
+      @projects = current_user.assigned_projects.where("name LIKE ?", "%#{params[:query]}%")
+      @pagy, @projects = pagy(@projects)
+      render_search_results("projects-table-body", "projects")
+
+    elsif current_user.developer?
+      @bugs = current_user.assigned_bugs.where("title LIKE ?", "%#{params[:query]}%")
+      @pagy, @bugs = pagy(@bugs)
+      render_search_results("bugs-table-body", "bugs")
+    end
+  end
+
+  def render_search_results(dom_id, type)
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(dom_id, partial: "#{type}/table", locals: { type.to_sym => instance_variable_get("@#{type}") })
+      end
+      format.html { render "index" }
     end
   end
   def show
