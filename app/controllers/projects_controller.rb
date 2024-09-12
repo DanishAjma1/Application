@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   # before_action :authenticate_user!
-  before_action :require_manager, only: [ :new, :create, :destroy ]
+  # before_action :require_manager, only: [ :new, :create, :destroy ]
   before_action :set_project, only: [ :show, :edit, :update, :destroy ]
   def index
     if current_user.manager?
