@@ -4,6 +4,26 @@ class BugsController < ApplicationController
     before_action :set_project, only: [ :new, :create, :destroy, :edit, :update ]
   before_action :set_bug, only: %i[edit update destroy]
 
+  def index
+    if can? :manage, Bug
+      @projects = current_user.assigned_projects
+      if params[:query].present?
+        @projects = @projects.where("name LIKE ?", "%#{params[:query]}%")
+      end
+      @pagy, @projects = pagy(@projects)
+      render "projects/index"
+
+    elsif can? :update, Bug
+      @pagy, @bugs = pagy(current_user.assigned_bugs)
+      @bugs = @bugs.where("title LIKE ?", "%#{params[:query]}%")
+      @pagy, @bugs=pagy(@bugs)
+    # Render the entire index page for a normal HTML request (since we're not using Turbo)
+    respond_to do |format|
+      format.html { render :index } # Full page with search results and pagination
+    end
+    end
+  end
+
   def show
   end
 

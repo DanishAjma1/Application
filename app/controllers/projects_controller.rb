@@ -3,41 +3,19 @@ class ProjectsController < ApplicationController
   # before_action :require_manager, only: [ :new, :create, :destroy ]
   before_action :set_project, only: [ :show, :edit, :update, :destroy ]
   def index
-    if current_user.manager?
-  @pagy, @projects = pagy(current_user.managed_projects)
+    if can? :manage, Project
+    @projects = current_user.managed_projects
+    @projects = @projects.where("name LIKE ?", "%#{params[:query]}%") if params[:query].present?
+    @pagy, @projects = pagy(@projects)
 
-    elsif current_user.qa?
-  @pagy, @projects = pagy(current_user.assigned_projects)
-
-    elsif current_user.developer?
-  @pagy, @bugs = pagy(current_user.assigned_bugs)
-    end
-  end
-
-  def search
-    if current_user.manager?
-      @projects = current_user.managed_projects.where("name LIKE ?", "%#{params[:query]}%")
-      @pagy, @projects = pagy(@projects)
-      render_search_results("projects-table-body", "projects")
-
-    elsif current_user.qa?
-      @projects = current_user.assigned_projects.where("name LIKE ?", "%#{params[:query]}%")
-      @pagy, @projects = pagy(@projects)
-      render_search_results("projects-table-body", "projects")
-
-    elsif current_user.developer?
-      @bugs = current_user.assigned_bugs.where("title LIKE ?", "%#{params[:query]}%")
-      @pagy, @bugs = pagy(@bugs)
-      render_search_results("bugs-table-body", "bugs")
-    end
-  end
-
-  def render_search_results(dom_id, type)
+    # Render the entire index page for a normal HTML request (since we're not using Turbo)
     respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.replace(dom_id, partial: "#{type}/table", locals: { type.to_sym => instance_variable_get("@#{type}") })
-      end
-      format.html { render "index" }
+      format.html { render :index } # Full page with search results and pagination
+    end
+    elsif can?(:update, Project) && can?(:manage, Bug)
+      redirect_to bugs_path # Redirect to the bugs index for QA
+    elsif can? :update, Bug
+      redirect_to bugs_path
     end
   end
   def show
