@@ -1,5 +1,5 @@
 <form id="search-form" action="<%= bugs_path %>" method="get">
-  <input type="text" id="search-input" name="query" placeholder="Search Bugs...">
+  <input type="text" id="bug-search-input" name="query" placeholder="Search Bugs...">
 </form>
 <h1>Bugs List</h1>
   <div id="bugs-list">
@@ -20,3 +20,4 @@
       <%== pagy_bootstrap_nav(@pagy) %>
     </div>
   </div>
+  

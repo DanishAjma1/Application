@@ -1,8 +1,8 @@
 class BugsController < ApplicationController
-  before_action :require_qa, only: [ :new, :create, :destroy ]
-    # before_action :set_bug, only: [ :show, :edit, :update, :destroy ]
     before_action :set_project, only: [ :new, :create, :destroy, :edit, :update ]
   before_action :set_bug, only: %i[edit update destroy]
+  load_and_authorize_resource
+
 
   def index
     if can? :manage, Bug
@@ -13,7 +13,7 @@ class BugsController < ApplicationController
       @pagy, @projects = pagy(@projects)
       render "projects/index"
 
-    elsif can? :update, Bug
+    else
       @pagy, @bugs = pagy(current_user.assigned_bugs)
       @bugs = @bugs.where("title LIKE ?", "%#{params[:query]}%")
       @pagy, @bugs=pagy(@bugs)
@@ -55,12 +55,6 @@ class BugsController < ApplicationController
   def destroy
     @bug.destroy
     redirect_to project_path, notice: "bug Deleted Successfully.."
-  end
-  def require_qa
-    unless current_user.qa?
-      flash[:alert] = "Only qas have these rights."
-      redirect_to root_path
-    end
   end
   def set_project
     @project = Project.find(params[:project_id])

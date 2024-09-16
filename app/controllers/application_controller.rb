@@ -2,7 +2,13 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   include Pagy::Backend
   allow_browser versions: :modern
-  include CanCan::ControllerAdditions
+  rescue_from CanCan::AccessDenied do |exception|
+    # Customize the flash message
+    flash[:alert] = "You are not Authorized User."
+
+    # Redirect the user to a safe page, e.g., root_path or another relevant page
+    redirect_to root_path
+  end
 
   protect_from_forgery with: :exception, prepend: true
   before_action :authenticate_user!

@@ -2,13 +2,20 @@
 <h1>Projects List</h1>
 
 <% if can? :destoy, Project%>
-<!-- Search Form -->
+<!-- Search form -->
 <form id="search-form" action="<%= projects_path %>" method="get">
-  <input type="text" id="search-input" name="query" placeholder="Search projects...">
+  <input type="text" id="project-search-input" name="query" placeholder="Search projects...">
 </form>
+
+<!-- Search results div -->
+<div id="projects-list">
+  
+  <%# <%= render partial: "table", locals: { projects: @projects } %>
+</div>
+
 <% else %>
-<form id="search-form" action="<%= bugs_path %>" method="get">
-  <input type="text" id="search-input" name="query" placeholder="Search projects..." value="<%= params[:query] %>">
+<form id="bug-search-form" action="<%= bugs_path %>" method="get">
+  <input type="text" id="bug-search-input" name="query" placeholder="Search projects..." value="<%= params[:query] %>">
 </form>
 <% end %>
 <!-- Projects Table -->

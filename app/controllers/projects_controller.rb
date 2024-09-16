@@ -1,20 +1,30 @@
 class ProjectsController < ApplicationController
   # before_action :authenticate_user!
   # before_action :require_manager, only: [ :new, :create, :destroy ]
+  before_action :authenticate_user! # Ensure the user is authenticated for all actions
   before_action :set_project, only: [ :show, :edit, :update, :destroy ]
+  load_and_authorize_resource
+
   def index
-    if can? :manage, Project
+    if current_user.manager?
     @projects = current_user.managed_projects
-    @projects = @projects.where("name LIKE ?", "%#{params[:query]}%") if params[:query].present?
+    if params[:query].present?
+      @projects = @projects.where("name LIKE ?", "%#{params[:query]}%")
+    else
+      # @projects = @projects.none
+    end
+
     @pagy, @projects = pagy(@projects)
 
-    # Render the entire index page for a normal HTML request (since we're not using Turbo)
     respond_to do |format|
-      format.html { render :index } # Full page with search results and pagination
+      format.html # For normal page load
+    format.json do
+      render json: { projects: @projects.map { |project| { name: project.name, url: project_path(project) } } }
     end
-    elsif can?(:update, Project) && can?(:manage, Bug)
+    end
+    elsif can?(:read, Project) && can?(:manage, Bug)
       redirect_to bugs_path # Redirect to the bugs index for QA
-    elsif can? :update, Bug
+    elsif can? :show, Bug
       redirect_to bugs_path
     end
   end

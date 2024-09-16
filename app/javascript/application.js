@@ -2,13 +2,52 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 
+// Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', () => {
-  const searchInput = document.getElementById('search-input');
-  const searchForm = document.getElementById('search-form');
+  const bugsearchInput = document.getElementById('bug-search-input');
 
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      const query = searchInput.value;
+    const projectsearchInput = document.getElementById('project-search-input');
+
+  // Add an event listener for input changes
+  if (projectsearchInput) {
+    projectsearchInput.addEventListener('input', () => {
+      const query = projectsearchInput.value;
+
+      // Send an AJAX request
+      fetch(`/projects.json?query=${query}`, {
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const projectsList = document.getElementById('projects-list');
+
+        // Clear the current list
+        projectsList.innerHTML = '';
+
+        // Populate the list with the new search results
+        data.projects.forEach(project => {
+          const listItem = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = project.url;  // Set the URL
+          link.textContent = project.name;  // Set the link text
+          
+          // Append the link to the list item
+          listItem.appendChild(link);
+
+          // Append the list item to the projects list
+          projectsList.appendChild(listItem);
+        });
+      })
+      .catch(error => console.error('Error:', error));
+    });
+  }
+  const searchForm = document.getElementById('bug-search-form');
+
+  if (bugsearchInput) {
+    bugsearchInput.addEventListener('input', () => {
+      const query = bugsearchInput.value;
 
       // Fetch the search results for both projects and bugs
       fetch(`${searchForm.action}?query=${query}`, {

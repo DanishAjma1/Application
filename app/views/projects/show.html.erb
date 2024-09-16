@@ -16,8 +16,8 @@
       <% end %>
     </ul>
 </div>
-<%= link_to "Edit",edit_project_path%><br>
 <% if can? :delete,@project %>
+<%= link_to "Edit",edit_project_path%><br>
 <%= link_to "Delete",project_path(@project), data: {
                                                turbo_method: :delete,
                                                turbo_confirm: "Are you sure?",
