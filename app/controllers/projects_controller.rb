@@ -1,43 +1,31 @@
 class ProjectsController < ApplicationController
   # before_action :authenticate_user!
-  before_action :require_manager, only: [ :new, :create, :destroy ]
+  # before_action :require_manager, only: [ :new, :create, :destroy ]
+  before_action :authenticate_user! # Ensure the user is authenticated for all actions
   before_action :set_project, only: [ :show, :edit, :update, :destroy ]
+  load_and_authorize_resource
+
   def index
     if current_user.manager?
-  @pagy, @projects = pagy(current_user.managed_projects)
-
-    elsif current_user.qa?
-  @pagy, @projects = pagy(current_user.assigned_projects)
-
-    elsif current_user.developer?
-  @pagy, @bugs = pagy(current_user.assigned_bugs)
+    @projects = current_user.managed_projects
+    if params[:query].present?
+      @projects = @projects.where("name LIKE ?", "%#{params[:query]}%")
+    else
+      # @projects = @projects.none
     end
-  end
 
-  def search
-    if current_user.manager?
-      @projects = current_user.managed_projects.where("name LIKE ?", "%#{params[:query]}%")
-      @pagy, @projects = pagy(@projects)
-      render_search_results("projects-table-body", "projects")
+    @pagy, @projects = pagy(@projects)
 
-    elsif current_user.qa?
-      @projects = current_user.assigned_projects.where("name LIKE ?", "%#{params[:query]}%")
-      @pagy, @projects = pagy(@projects)
-      render_search_results("projects-table-body", "projects")
-
-    elsif current_user.developer?
-      @bugs = current_user.assigned_bugs.where("title LIKE ?", "%#{params[:query]}%")
-      @pagy, @bugs = pagy(@bugs)
-      render_search_results("bugs-table-body", "bugs")
-    end
-  end
-
-  def render_search_results(dom_id, type)
     respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.replace(dom_id, partial: "#{type}/table", locals: { type.to_sym => instance_variable_get("@#{type}") })
-      end
-      format.html { render "index" }
+      format.html # For normal page load
+    format.json do
+      render json: { projects: @projects.map { |project| { name: project.name, url: project_path(project) } } }
+    end
+    end
+    elsif can?(:read, Project) && can?(:manage, Bug)
+      redirect_to bugs_path # Redirect to the bugs index for QA
+    elsif can? :show, Bug
+      redirect_to bugs_path
     end
   end
   def show

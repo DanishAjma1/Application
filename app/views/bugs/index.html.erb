@@ -1,0 +1,23 @@
+<form id="search-form" action="<%= bugs_path %>" method="get">
+  <input type="text" id="bug-search-input" name="query" placeholder="Search Bugs...">
+</form>
+<h1>Bugs List</h1>
+  <div id="bugs-list">
+    <table>
+      <thead>
+        <tr>
+          <th>Bug Title</th>
+          <th>Description</th>
+          <th>Priority</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="bugs-table-body">
+        <%= render partial: "bugs/table", locals: { bugs: @bugs } %>
+      </tbody>
+    </table>
+    <div class="pag-bar mt-5 pt-5 d-flex justify-content-center">
+      <%== pagy_bootstrap_nav(@pagy) %>
+    </div>
+  </div>
+  

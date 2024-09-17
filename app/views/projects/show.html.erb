@@ -1,19 +1,38 @@
+<style>
+  .bugs{
+    margin-left:10%;
+  }
+</style>
+<%if can? :read,Project%>
+<p>Project is open to view..........</p>
 <h2><%= @project.name %></h1>
 <div>
-    <h3><%= @project.description%></h3>
-    <p><%= @project.status%></p>
+    <p><strong>Description: </strong><%= @project.description%></p>
+    <p><strong>Status: </strong><%= @project.status%></p>
+    <h3>Assigned QAs</h3>
+    <ul>
+      <% @project.qa.each do |qa| %>
+        <li><%= qa.email %> (QA)</li>
+      <% end %>
+    </ul>
 </div>
-<%= link_to "Edit",edit_project_path%><br>
 <% if can? :delete,@project %>
+<%= link_to "Edit",edit_project_path%><br>
 <%= link_to "Delete",project_path(@project), data: {
                                                turbo_method: :delete,
                                                turbo_confirm: "Are you sure?",
                                              } %>
                                              <% end %>
-  <% if can? :read,Bug %>
-<h2>Bugs<h2>
+                                             <% end %>
+<div class="bugs">
+<% if can? :read,Bug %>
+<p>Below the Bugs are listed associated to project.</p>
+<h2>Bugs List<h2>
 <%= render @project.bugs %>
+<%if can? :create,Bug%>
 <h2>Add a Bug:</h2>
-<%= render "bugs/form", project: @project %>
+<p><%= link_to "New Bug", new_project_bug_path(@project) %></p>
 <% end %>
+<% end %>
+</div>
 <%= link_to "Back", projects_path%>

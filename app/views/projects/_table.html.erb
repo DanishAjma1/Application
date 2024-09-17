@@ -5,9 +5,11 @@
     <td><%= project.status %></td>
     <% if can? :delete, project %>
       <td><%= link_to "Delete", project_path(project), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %></td>
-    <% end %>
     <td>
       <%= link_to "Edit", edit_project_path(project) %>
     </td>
+    <% else %>
+    <td>Not Permissible</td>
+    <% end %>
   </tr>
 <% end %>
