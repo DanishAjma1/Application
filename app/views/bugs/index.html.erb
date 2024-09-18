@@ -1,4 +1,4 @@
-<form id="search-form" action="<%= bugs_path %>" method="get">
+<form id="bug-search-form" action="<%= bugs_path %>" method="get">
   <input type="text" id="bug-search-input" name="query" placeholder="Search Bugs...">
 </form>
 <h1>Bugs List</h1>
@@ -9,7 +9,6 @@
           <th>Bug Title</th>
           <th>Description</th>
           <th>Priority</th>
-          <th>Actions</th>
         </tr>
       </thead>
       <tbody id="bugs-table-body">

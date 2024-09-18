@@ -17,7 +17,6 @@ class BugsController < ApplicationController
       @pagy, @bugs = pagy(current_user.assigned_bugs)
       @bugs = @bugs.where("title LIKE ?", "%#{params[:query]}%")
       @pagy, @bugs=pagy(@bugs)
-    # Render the entire index page for a normal HTML request (since we're not using Turbo)
     respond_to do |format|
       format.html { render :index } # Full page with search results and pagination
     end

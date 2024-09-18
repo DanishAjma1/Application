@@ -1,12 +1,12 @@
 class ProjectsController < ApplicationController
-  # before_action :authenticate_user!
+  before_action :authenticate_user!
   # before_action :require_manager, only: [ :new, :create, :destroy ]
-  before_action :authenticate_user! # Ensure the user is authenticated for all actions
+  # before_action :authenticate_user! # Ensure the user is authenticated for all actions
   before_action :set_project, only: [ :show, :edit, :update, :destroy ]
-  load_and_authorize_resource
+load_and_authorize_resource except: [ :index ]
 
   def index
-    if current_user.manager?
+    if can? :manage, Project
     @projects = current_user.managed_projects
     if params[:query].present?
       @projects = @projects.where("name LIKE ?", "%#{params[:query]}%")
@@ -22,10 +22,13 @@ class ProjectsController < ApplicationController
       render json: { projects: @projects.map { |project| { name: project.name, url: project_path(project) } } }
     end
     end
-    elsif can?(:read, Project) && can?(:manage, Bug)
-      redirect_to bugs_path # Redirect to the bugs index for QA
-    elsif can? :show, Bug
+    elsif can? :manage, Bug
       redirect_to bugs_path
+    elsif can? :read, Bug
+      redirect_to bugs_path
+    else
+    flash[:alert] = "You are not authorized to view this page."
+    redirect_to new_user_session_path
     end
   end
   def show
